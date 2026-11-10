@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Термометр Вселенной | INTRIID</title>
+<title>ПУЛЬСАР | Вселенная</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Caveat:wght@700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -11,7 +11,8 @@
     --accent: #00EAFF;
     --text-main: #FFFFFF;
     --text-muted: #8A9BB0;
-    --card-bg: rgba(6, 12, 24, 0.8);
+    --card-bg: rgba(10, 17, 31, 0.85);
+    --border-color: #1A2A45;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,164 +21,126 @@
     font-family: 'Roboto', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    transition: background-color 1s ease;
+    /* Космический фон с галактиками */
+    background-image: 
+      radial-gradient(ellipse at 10% 20%, rgba(0, 234, 255, 0.08) 0%, transparent 40%),
+      radial-gradient(ellipse at 90% 80%, rgba(163, 116, 255, 0.08) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 50%, rgba(255, 234, 0, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
   }
 
-  /* Фон со звездами */
+  /* Звезды на фоне */
   .stars-bg {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-image: radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)), 
-                      radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)), 
+                      radial-gradient(1.5px 1.5px at 40px 70px, #fff, rgba(0,0,0,0)), 
                       radial-gradient(1px 1px at 50px 160px, #fff, rgba(0,0,0,0)), 
-                      radial-gradient(1.5px 1.5px at 90px 40px, #fff, rgba(0,0,0,0)), 
-                      radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)), 
+                      radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0)), 
+                      radial-gradient(1.5px 1.5px at 130px 80px, #fff, rgba(0,0,0,0)), 
                       radial-gradient(1px 1px at 160px 120px, #fff, rgba(0,0,0,0));
     background-repeat: repeat;
     background-size: 200px 200px;
-    z-index: 0;
-    opacity: 0.6;
-    animation: twinkle 5s infinite;
+    z-index: -1;
+    opacity: 0.5;
+    animation: twinkle 6s infinite alternate;
   }
-
   @keyframes twinkle {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.8; }
+    0% { opacity: 0.3; }
+    100% { opacity: 0.7; }
   }
 
-  /* Логотип */
-  .header {
-    padding: 30px 40px;
+  /* Шапка */
+  header {
+    padding: 20px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 15px;
     z-index: 10;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(2, 5, 10, 0.8);
+    backdrop-filter: blur(10px);
+    position: sticky; top: 0;
+    flex-wrap: wrap;
+    gap: 15px;
   }
+  
+  .logo-group { display: flex; align-items: center; gap: 15px; }
   .logo-icon {
-    width: 40px; height: 40px;
-    border: 4px solid var(--accent);
+    width: 30px; height: 30px;
+    border: 3px solid var(--accent);
     border-radius: 50%;
     display: flex; justify-content: center; align-items: center;
   }
-  .logo-icon::after {
-    content: ''; width: 12px; height: 12px; background: var(--accent); border-radius: 50%;
-  }
-  .logo-text {
-    font-size: 24px; font-weight: 900; letter-spacing: 2px;
-  }
+  .logo-icon::after { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+  .logo-text { font-size: 22px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
 
-  /* Основной контент */
-  .main-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-    padding: 20px;
-    text-align: center;
-    position: relative;
+  /* Переключатель вкладок */
+  .tabs { display: flex; gap: 10px; }
+  .tab-btn {
+    background: transparent; border: 1px solid var(--border-color); color: var(--text-muted);
+    padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 700; transition: 0.3s;
   }
+  .tab-btn:hover { color: #fff; border-color: #fff; }
+  .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
+  /* --- РЕЖИМ 1: ШКАЛА --- */
+  #view-scale {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: calc(100vh - 150px);
+    padding: 20px; text-align: center; width: 100%; max-width: 900px; margin: 0 auto;
+    transition: opacity 0.3s;
+  }
   .temp-display {
-    font-family: 'Caveat', cursive;
-    font-size: 10rem;
-    line-height: 1;
-    font-weight: 700;
-    color: #fff;
-    text-shadow: 0 0 20px rgba(255,255,255,0.5);
-    margin-bottom: 10px;
-    transition: color 0.5s, text-shadow 0.5s;
-    position: relative;
+    font-family: 'Caveat', cursive; font-size: 10rem; line-height: 1; font-weight: 700;
+    color: #fff; text-shadow: 0 0 30px var(--current-color); margin-bottom: 10px; transition: all 0.5s;
   }
-  .temp-display span {
-    font-size: 4rem;
-    vertical-align: top;
-  }
-
-  .object-title {
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 20px;
-    text-shadow: 0 0 15px rgba(0, 234, 255, 0.3);
-  }
-
-  .object-desc {
-    font-size: 1.1rem;
-    color: var(--text-main);
-    max-width: 600px;
-    line-height: 1.6;
-    background: var(--card-bg);
-    padding: 20px 30px;
-    border-radius: 15px;
-    border: 1px solid rgba(0, 234, 255, 0.2);
-    backdrop-filter: blur(10px);
-  }
-
-  /* Ползунок */
-  .slider-container {
-    width: 100%;
-    max-width: 800px;
-    padding: 40px;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 auto;
-  }
-
-  input[type=range] {
-    -webkit-appearance: none;
-    width: 100%;
-    background: transparent;
-  }
-  input[type=range]:focus { outline: none; }
+  .temp-display span { font-size: 4rem; vertical-align: top; }
+  .object-title { font-size: 2.5rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+  .object-desc { font-size: 1.1rem; line-height: 1.6; background: var(--card-bg); padding: 20px 30px; border-radius: 15px; border: 1px solid var(--border-color); backdrop-filter: blur(10px); max-width: 700px; }
   
-  input[type=range]::-webkit-slider-runnable-track {
-    width: 100%; height: 8px; cursor: pointer;
-    background: linear-gradient(90deg, #00EAFF, #FFEA00, #FF0000);
-    border-radius: 5px;
-    box-shadow: 0 0 15px rgba(0, 234, 255, 0.5);
-  }
-  input[type=range]::-moz-range-track {
-    width: 100%; height: 8px; cursor: pointer;
-    background: linear-gradient(90deg, #00EAFF, #FFEA00, #FF0000);
-    border-radius: 5px;
-  }
+  .slider-wrapper { width: 100%; max-width: 800px; margin-top: 40px; }
+  input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+  input[type=range]:focus { outline: none; }
+  input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: linear-gradient(90deg, #00EAFF, #FFEA00, #FF0000); border-radius: 5px; box-shadow: 0 0 15px rgba(0, 234, 255, 0.5); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 30px; width: 30px; border-radius: 50%; background: #fff; cursor: pointer; margin-top: -11px; box-shadow: 0 0 20px var(--accent); border: 4px solid var(--accent); }
 
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 30px; width: 30px; border-radius: 50%;
-    background: #fff; cursor: pointer;
-    margin-top: -11px;
-    box-shadow: 0 0 20px var(--accent);
-    border: 4px solid var(--accent);
+  /* --- РЕЖИМ 2: КАТАЛОГ --- */
+  #view-catalog {
+    display: none; padding: 20px; width: 100%; max-width: 1000px; margin: 0 auto;
+    animation: fadeIn 0.4s ease;
   }
-  input[type=range]::-moz-range-thumb {
-    height: 30px; width: 30px; border-radius: 50%;
-    background: #fff; cursor: pointer;
-    box-shadow: 0 0 20px var(--accent);
-    border: 4px solid var(--accent);
-  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  #loader {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 1.5rem; color: var(--accent); font-weight: bold;
-  }
+  .controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
+  .search-input { width: 100%; padding: 15px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; color: #fff; font-size: 16px; outline: none; transition: 0.3s; }
+  .search-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 234, 255, 0.1); }
+
+  .categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+  .categories::-webkit-scrollbar { display: none; }
+  .cat-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: 700; transition: 0.2s; }
+  .cat-btn:hover, .cat-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+  .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 15px; padding: 20px; cursor: pointer; transition: 0.2s; position: relative; overflow: hidden; backdrop-filter: blur(5px); }
+  .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(0, 234, 255, 0.1); }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background-color: var(--card-color, var(--accent)); }
+  .card-cat { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+  .card-title { font-size: 20px; font-weight: 900; margin-bottom: 10px; }
+  .card-temp { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; color: var(--card-color, var(--accent)); }
+
+  .hidden { display: none !important; }
+  #loader { text-align: center; padding: 50px; font-size: 1.2rem; color: var(--accent); font-weight: bold; }
 
   /* Адаптив */
   @media (max-width: 768px) {
     .temp-display { font-size: 7rem; }
     .temp-display span { font-size: 3rem; }
     .object-title { font-size: 1.8rem; }
-    .object-desc { font-size: 0.95rem; padding: 15px 20px; }
-    .slider-container { padding: 20px; }
+    header { justify-content: center; flex-direction: column; }
   }
 </style>
 </head>
@@ -185,29 +148,44 @@
 
 <div class="stars-bg"></div>
 
-<div class="header">
-  <div class="logo-icon"></div>
-  <div class="logo-text">INTRIID</div>
-</div>
+<header>
+  <div class="logo-group">
+    <div class="logo-icon"></div>
+    <div class="logo-text">ПУЛЬСАР</div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('scale')">Шкала</button>
+    <button class="tab-btn" onclick="switchTab('catalog')">Каталог</button>
+  </div>
+</header>
 
 <div id="loader">Загрузка данных из космоса...</div>
 
-<div class="main-content" id="main-content" style="display: none;">
+<!-- РЕЖИМ 1: ШКАЛА -->
+<div id="view-scale" style="display: none;">
   <div class="temp-display" id="temp-display">0<span>°C</span></div>
   <div class="object-title" id="object-title">Название</div>
   <div class="object-desc" id="object-desc">Описание объекта...</div>
+  <div class="slider-wrapper">
+    <input type="range" id="temp-slider" min="0" max="100" value="0">
+  </div>
 </div>
 
-<div class="slider-container" id="slider-container" style="display: none;">
-  <input type="range" id="temp-slider" min="0" max="100" value="0">
+<!-- РЕЖИМ 2: КАТАЛОГ -->
+<div id="view-catalog">
+  <div class="controls">
+    <input type="text" id="search" class="search-input" placeholder="Поиск по названию..." oninput="filterCatalog()">
+    <div class="categories" id="categories-container"></div>
+  </div>
+  <div class="grid" id="grid-container"></div>
 </div>
 
 <script>
-// ТВОЯ ССЫЛКА НА ТАБЛИЦУ (уже в формате CSV)
+// ССЫЛКА НА ТВОЮ ТАБЛИЦУ (в формате CSV)
 const CSV_URL = "https://docs.google.com/spreadsheets/d/16ao_LQy0nvE5feywtZYatiXIclHRwce4RDsTCyp4BEA/export?format=csv";
 
 let objects = [];
-let slider;
+let currentCategory = "Все";
 
 async function loadData() {
   try {
@@ -215,36 +193,27 @@ async function loadData() {
     const csvText = await response.text();
     const rows = parseCSV(csvText);
 
-    if (rows.length < 2) {
-      document.getElementById('loader').innerText = "В таблице нет данных.";
-      return;
-    }
-
     const headers = rows[0].map(h => h.trim().toLowerCase());
     const idxTemp = headers.indexOf('температура');
     const idxTitle = headers.indexOf('название объекта');
     const idxDesc = headers.indexOf('описание');
+    const idxCat = headers.indexOf('категория');
     const idxColor = headers.indexOf('цвет');
 
-    // Парсим данные и сортируем по температуре (от холодного к горячему)
     objects = rows.slice(1)
       .filter(row => row[idxTemp] && row[idxTitle])
       .map(row => ({
         temp: parseFloat(row[idxTemp]) || 0,
         title: row[idxTitle].trim(),
         desc: row[idxDesc] ? row[idxDesc].trim() : "Описание отсутствует.",
+        category: row[idxCat] ? row[idxCat].trim() : "Разное",
         color: row[idxColor] ? row[idxColor].trim() : "#00EAFF"
       }))
-      .sort((a, b) => a.temp - b.temp);
+      .sort((a, b) => a.temp - b.temp); // Сортировка для шкалы
 
-    if (objects.length === 0) {
-      document.getElementById('loader').innerText = "Не найдено объектов с корректными данными.";
-      return;
-    }
-
-    initUI();
+    initApp();
   } catch (error) {
-    document.getElementById('loader').innerText = "Ошибка загрузки данных. Проверьте доступ к таблице.";
+    document.getElementById('loader').innerText = "Ошибка загрузки данных. Проверьте ссылку на таблицу.";
   }
 }
 
@@ -267,44 +236,116 @@ function parseCSV(text) {
   return rows;
 }
 
-function initUI() {
+function initApp() {
   document.getElementById('loader').style.display = 'none';
-  document.getElementById('main-content').style.display = 'flex';
-  document.getElementById('slider-container').style.display = 'flex';
-
-  slider = document.getElementById('temp-slider');
+  document.getElementById('view-scale').style.display = 'flex';
+  
+  // Настраиваем шкалу
+  const slider = document.getElementById('temp-slider');
   slider.max = objects.length - 1;
-  slider.value = 0; // Начинаем с самого холодного
+  slider.value = 0;
+  slider.addEventListener('input', updateScale);
+  updateScale();
 
-  slider.addEventListener('input', updateThermometer);
-  updateThermometer();
+  // Настраиваем каталог
+  initCategories();
+  renderCatalog();
 }
 
-function updateThermometer() {
-  const index = parseInt(slider.value);
+// --- ЛОГИКА ШКАЛЫ ---
+function updateScale() {
+  const index = parseInt(document.getElementById('temp-slider').value);
   const obj = objects[index];
-
   if (!obj) return;
 
-  // Обновляем текст
   document.getElementById('temp-display').innerHTML = `${obj.temp} <span>°C</span>`;
   document.getElementById('object-title').innerText = obj.title;
   document.getElementById('object-desc').innerText = obj.desc;
 
-  // Меняем фон и свечение
+  // Меняем свечение
   const hex = obj.color.replace('#', '');
-  // Проверка, что цвет валидный (6 символов)
   if (hex.length === 6) {
     const r = parseInt(hex.substr(0, 2), 16) || 0;
     const g = parseInt(hex.substr(2, 2), 16) || 0;
     const b = parseInt(hex.substr(4, 2), 16) || 0;
-    
-    // Фон делаем очень темным оттенком этого цвета (10% яркости)
     document.body.style.backgroundColor = `rgb(${r * 0.1}, ${g * 0.1}, ${b * 0.1})`;
-    
-    // Свечение текста температуры делаем цветом из таблицы
-    document.getElementById('temp-display').style.textShadow = `0 0 30px ${obj.color}`;
+    document.getElementById('temp-display').style.textShadow = `0 0 40px ${obj.color}`;
     document.getElementById('temp-display').style.color = obj.color;
+    document.documentElement.style.setProperty('--current-color', obj.color);
+  }
+}
+
+// --- ЛОГИКА КАТАЛОГА ---
+function initCategories() {
+  const cats = ["Все", ...new Set(objects.map(o => o.category))];
+  document.getElementById('categories-container').innerHTML = cats.map(c => `
+    <button class="cat-btn ${c === currentCategory ? 'active' : ''}" onclick="setCategory('${c.replace(/'/g, "\\'")}')">${c}</button>
+  `).join('');
+}
+
+function setCategory(cat) {
+  currentCategory = cat;
+  initCategories();
+  filterCatalog();
+}
+
+function filterCatalog() {
+  const query = document.getElementById('search').value.toLowerCase();
+  let filtered = objects;
+
+  if (currentCategory !== "Все") {
+    filtered = filtered.filter(o => o.category === currentCategory);
+  }
+  if (query) {
+    filtered = filtered.filter(o => o.title.toLowerCase().includes(query));
+  }
+
+  renderCatalog(filtered);
+}
+
+function renderCatalog(filtered) {
+  const grid = document.getElementById('grid-container');
+  if (!filtered) filtered = objects;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = "<p style='color:var(--text-muted); grid-column: 1/-1; text-align:center;'>Ничего не найдено.</p>";
+    return;
+  }
+
+  grid.innerHTML = filtered.map(o => `
+    <div class="card" style="--card-color: ${o.color};" onclick="openFromCatalog('${o.title.replace(/'/g, "\\'")}')">
+      <div class="card-cat">${o.category}</div>
+      <div class="card-title">${o.title}</div>
+      <div class="card-temp">${o.temp} °C</div>
+    </div>
+  `).join('');
+}
+
+// При клике на карточку в каталоге — переключаемся на шкалу и находим этот объект
+function openFromCatalog(title) {
+  const index = objects.findIndex(o => o.title === title);
+  if (index !== -1) {
+    document.getElementById('temp-slider').value = index;
+    updateScale();
+    switchTab('scale');
+  }
+}
+
+// Переключение вкладок
+function switchTab(tab) {
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach(t => t.classList.remove('active'));
+
+  if (tab === 'scale') {
+    tabs[0].classList.add('active');
+    document.getElementById('view-catalog').style.display = 'none';
+    document.getElementById('view-scale').style.display = 'flex';
+    updateScale(); // Обновляем цвет фона
+  } else {
+    tabs[1].classList.add('active');
+    document.getElementById('view-scale').style.display = 'none';
+    document.getElementById('view-catalog').style.display = 'block';
+    document.body.style.backgroundColor = '#02050A'; // Возвращаем темный фон
   }
 }
 
