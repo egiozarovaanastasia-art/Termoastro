@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Термометр Вселенной | INTRIID</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #02050A;
+    --accent: #00EAFF;
+    --text-main: #FFFFFF;
+    --text-muted: #8A9BB0;
+    --card-bg: rgba(6, 12, 24, 0.8);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body { 
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 1s ease;
+  }
+
+  /* Фон со звездами */
+  .stars-bg {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)), 
+                      radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)), 
+                      radial-gradient(1px 1px at 50px 160px, #fff, rgba(0,0,0,0)), 
+                      radial-gradient(1.5px 1.5px at 90px 40px, #fff, rgba(0,0,0,0)), 
+                      radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)), 
+                      radial-gradient(1px 1px at 160px 120px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    z-index: 0;
+    opacity: 0.6;
+    animation: twinkle 5s infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+
+  /* Логотип */
+  .header {
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 10;
+  }
+  .logo-icon {
+    width: 40px; height: 40px;
+    border: 4px solid var(--accent);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .logo-icon::after {
+    content: ''; width: 12px; height: 12px; background: var(--accent); border-radius: 50%;
+  }
+  .logo-text {
+    font-size: 24px; font-weight: 900; letter-spacing: 2px;
+  }
+
+  /* Основной контент */
+  .main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  .temp-display {
+    font-family: 'Caveat', cursive;
+    font-size: 10rem;
+    line-height: 1;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    margin-bottom: 10px;
+    transition: color 0.5s, text-shadow 0.5s;
+    position: relative;
+  }
+  .temp-display span {
+    font-size: 4rem;
+    vertical-align: top;
+  }
+
+  .object-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 15px rgba(0, 234, 255, 0.3);
+  }
+
+  .object-desc {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    max-width: 600px;
+    line-height: 1.6;
+    background: var(--card-bg);
+    padding: 20px 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(0, 234, 255, 0.2);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Ползунок */
+  .slider-container {
+    width: 100%;
+    max-width: 800px;
+    padding: 40px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+  }
+  input[type=range]:focus { outline: none; }
+  
+  input[type=range]::-webkit-slider-runnable-track {
+    width: 100%; height: 8px; cursor: pointer;
+    background: linear-gradient(90deg, #00EAFF, #FFEA00, #FF0000);
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 234, 255, 0.5);
+  }
+  input[type=range]::-moz-range-track {
+    width: 100%; height: 8px; cursor: pointer;
+    background: linear-gradient(90deg, #00EAFF, #FFEA00, #FF0000);
+    border-radius: 5px;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 30px; width: 30px; border-radius: 50%;
+    background: #fff; cursor: pointer;
+    margin-top: -11px;
+    box-shadow: 0 0 20px var(--accent);
+    border: 4px solid var(--accent);
+  }
+  input[type=range]::-moz-range-thumb {
+    height: 30px; width: 30px; border-radius: 50%;
+    background: #fff; cursor: pointer;
+    box-shadow: 0 0 20px var(--accent);
+    border: 4px solid var(--accent);
+  }
+
+  #loader {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 1.5rem; color: var(--accent); font-weight: bold;
+  }
+
+  /* Адаптив */
+  @media (max-width: 768px) {
+    .temp-display { font-size: 7rem; }
+    .temp-display span { font-size: 3rem; }
+    .object-title { font-size: 1.8rem; }
+    .object-desc { font-size: 0.95rem; padding: 15px 20px; }
+    .slider-container { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars-bg"></div>
+
+<div class="header">
+  <div class="logo-icon"></div>
+  <div class="logo-text">INTRIID</div>
+</div>
+
+<div id="loader">Загрузка данных из космоса...</div>
+
+<div class="main-content" id="main-content" style="display: none;">
+  <div class="temp-display" id="temp-display">0<span>°C</span></div>
+  <div class="object-title" id="object-title">Название</div>
+  <div class="object-desc" id="object-desc">Описание объекта...</div>
+</div>
+
+<div class="slider-container" id="slider-container" style="display: none;">
+  <input type="range" id="temp-slider" min="0" max="100" value="0">
+</div>
+
+<script>
+// ТВОЯ ССЫЛКА НА ТАБЛИЦУ (уже в формате CSV)
+const CSV_URL = "https://docs.google.com/spreadsheets/d/16ao_LQy0nvE5feywtZYatiXIclHRwce4RDsTCyp4BEA/export?format=csv";
+
+let objects = [];
+let slider;
+
+async function loadData() {
+  try {
+    const response = await fetch(CSV_URL);
+    const csvText = await response.text();
+    const rows = parseCSV(csvText);
+
+    if (rows.length < 2) {
+      document.getElementById('loader').innerText = "В таблице нет данных.";
+      return;
+    }
+
+    const headers = rows[0].map(h => h.trim().toLowerCase());
+    const idxTemp = headers.indexOf('температура');
+    const idxTitle = headers.indexOf('название объекта');
+    const idxDesc = headers.indexOf('описание');
+    const idxColor = headers.indexOf('цвет');
+
+    // Парсим данные и сортируем по температуре (от холодного к горячему)
+    objects = rows.slice(1)
+      .filter(row => row[idxTemp] && row[idxTitle])
+      .map(row => ({
+        temp: parseFloat(row[idxTemp]) || 0,
+        title: row[idxTitle].trim(),
+        desc: row[idxDesc] ? row[idxDesc].trim() : "Описание отсутствует.",
+        color: row[idxColor] ? row[idxColor].trim() : "#00EAFF"
+      }))
+      .sort((a, b) => a.temp - b.temp);
+
+    if (objects.length === 0) {
+      document.getElementById('loader').innerText = "Не найдено объектов с корректными данными.";
+      return;
+    }
+
+    initUI();
+  } catch (error) {
+    document.getElementById('loader').innerText = "Ошибка загрузки данных. Проверьте доступ к таблице.";
+  }
+}
+
+function parseCSV(text) {
+  const rows = []; let row = []; let field = ''; let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (c === '"') inQuotes = false;
+      else field += c;
+    } else {
+      if (c === '"') inQuotes = true;
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else if (c !== '\r') field += c;
+    }
+  }
+  if (field || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+function initUI() {
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('main-content').style.display = 'flex';
+  document.getElementById('slider-container').style.display = 'flex';
+
+  slider = document.getElementById('temp-slider');
+  slider.max = objects.length - 1;
+  slider.value = 0; // Начинаем с самого холодного
+
+  slider.addEventListener('input', updateThermometer);
+  updateThermometer();
+}
+
+function updateThermometer() {
+  const index = parseInt(slider.value);
+  const obj = objects[index];
+
+  if (!obj) return;
+
+  // Обновляем текст
+  document.getElementById('temp-display').innerHTML = `${obj.temp} <span>°C</span>`;
+  document.getElementById('object-title').innerText = obj.title;
+  document.getElementById('object-desc').innerText = obj.desc;
+
+  // Меняем фон и свечение
+  const hex = obj.color.replace('#', '');
+  // Проверка, что цвет валидный (6 символов)
+  if (hex.length === 6) {
+    const r = parseInt(hex.substr(0, 2), 16) || 0;
+    const g = parseInt(hex.substr(2, 2), 16) || 0;
+    const b = parseInt(hex.substr(4, 2), 16) || 0;
+    
+    // Фон делаем очень темным оттенком этого цвета (10% яркости)
+    document.body.style.backgroundColor = `rgb(${r * 0.1}, ${g * 0.1}, ${b * 0.1})`;
+    
+    // Свечение текста температуры делаем цветом из таблицы
+    document.getElementById('temp-display').style.textShadow = `0 0 30px ${obj.color}`;
+    document.getElementById('temp-display').style.color = obj.color;
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
